@@ -4,6 +4,8 @@ CXXFLAGS = --std=c++14
 SOURCESDIR = src
 BUILDDIR = build
 SOURCES = $(wildcard $(SOURCESDIR)/*.cpp)
+STATE_SOURCE = $(SOURCESDIR)/state/state.cpp
+POLICY_SOURCE = $(wildcard $(SOURCESDIR)/policy/*.cpp)
 
 TARGET = $(SOURCES:$(SOURCESDIR)/%.cpp=%)
 
@@ -23,10 +25,10 @@ $(BUILDDIR):
 
 ifeq ($(OS),Windows_NT)
 $(TARGET): % : $(SOURCESDIR)/%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@.exe $(SOURCESDIR)/state/state.cpp $< 
+	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@.exe $(STATE_SOURCE) $(POLICY_SOURCE) $< 
 else
 $(TARGET): % : $(SOURCESDIR)/%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@ $< 
+	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@ $(STATE_SOURCE) $< 
 endif
 
 clean:

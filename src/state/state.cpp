@@ -13,7 +13,7 @@ void move_list_init(){
       move_list.push_back(Point(i,j));
 }
 
-bool check_5(Board_Min board){
+static bool check_5(Board_Min board){
   for(int i=0; i<SIZE-4; i+=1){
     if((board[i]
         & board[i+1]
@@ -45,6 +45,49 @@ bool check_5(Board_Min board){
   }
   return false;
 }
+static int count_3_op(Board_Min board, Board_Min avail){
+  int res = 0;
+  for(int i=0; i<SIZE-3; i+=1){
+    res += (
+      avail[i] & board[i+1] & board[i+2] & board[i+3]
+    ).count();
+    res += (
+      board[i] & board[i+1] & board[i+2] & avail[i+3]
+    ).count();
+
+    res += (
+      avail[i]
+      & (board[i+1]>>1)
+      & (board[i+2]>>2)
+      & (board[i+3]>>3)
+    ).count();
+    res += (
+      board[i]
+      & (board[i+1]>>1)
+      & (board[i+2]>>2)
+      & (avail[i+3]>>3)
+    ).count();
+
+    res += (
+      avail[i]
+      & (board[i+1]<<1)
+      & (board[i+2]<<2)
+      & (board[i+3]<<3)
+    ).count();
+    res += (
+      board[i]
+      & (board[i+1]<<1)
+      & (board[i+2]<<2)
+      & (avail[i+3]<<3)
+    ).count();
+    for(int j=0; j<SIZE; j+=1){
+      res += (((board[j]>>i)&=0b0111) == 0b0111);
+    }
+  }
+  res += ((board[0]&=0b1110) == 0b1110);
+  return res;
+}
+
 
 State::State(Board board, int player): board(board), player(player){
   this->get_legal_actions();
@@ -119,4 +162,15 @@ GAME_STATE State::check_res(){
   }
   res = NONE;
   return NONE;
+}
+
+int State::eval(){
+  Board_Min self = board[this->player];
+  if(check_5(self))
+    return 10;
+
+  Board_Min opnt = board[next_player[this->player]];
+  Board_Min avail = board[0];
+
+  return count_3_op(self, avail)-count_3_op(opnt, avail);
 }

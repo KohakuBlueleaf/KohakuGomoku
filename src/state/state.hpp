@@ -48,7 +48,6 @@ struct Point {
 
 extern std::vector<Point> move_list;
 extern void move_list_init();
-extern bool check_5(Board_Min board);
 
 const int ROUND[8][2] = {
   {1,0},

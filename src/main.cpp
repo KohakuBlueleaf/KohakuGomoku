@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <cassert>
+#include "config.hpp"
 
 struct Point {
   int x, y;
@@ -31,7 +32,6 @@ public:
     BLACK = 1,
     WHITE = 2
   };
-  static const int SIZE = 15;
   std::array<std::array<int, SIZE>, SIZE> board;
   int empty_count;
   int cur_player;
@@ -195,7 +195,6 @@ public:
 const std::string file_log = "gamelog.txt";
 const std::string file_state = "state";
 const std::string file_action = "action";
-const int timeout = 10;
 
 void launch_executable(std::string filename) {
 

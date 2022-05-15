@@ -30,14 +30,14 @@ $(BUILD_DIR):
 
 ifeq ($(OS), Windows_NT)
 $(TARGET_PLAYER): % : $(SOURCES_DIR)/player_%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILD_DIR)/player_$@.exe $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/player_$@.exe $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
 $(TARGET_MAIN): % : $(SOURCES_DIR)/%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILD_DIR)/$@.exe $< 
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@.exe $< 
 else
 $(TARGET_PLAYER): % : $(SOURCES_DIR)/player_%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILD_DIR)/player_$@ $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/player_$@ $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
 $(TARGET_MAIN): % : $(SOURCES_DIR)/%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILD_DIR)/$@ $< 
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@ $< 
 endif
 
 clean:

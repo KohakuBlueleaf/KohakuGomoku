@@ -8,6 +8,9 @@ template<class Iter>
 inline size_t argmax(Iter first, Iter last){
   return std::distance(first, std::max_element(first, last));
 }
+inline float ucb(float w, float n, int t){
+  return w/n + C*sqrt(log(t)/n);
+}
 
 /*
 declartion of MCTS::Node
@@ -20,9 +23,6 @@ MCTS::Node::~Node(){
   delete this->state;
 }
 
-float MCTS::Node::ucb(int t, float n, float w){
-  return w/n + C*sqrt(log(t)/n);
-}
 int MCTS::Node::playout(State *state, bool root){
   GAME_STATE res = state->check_res();
   if(res==NONE){
@@ -76,7 +76,7 @@ MCTS::Node& MCTS::Node::next_child(){
   std::vector<float> ucb1;
   for(Node* child: this->childs){
     ucb1.push_back(
-      -(child->w/child->n) + C*sqrt(log(this->child_n)/child->n)
+      ucb(-child->w, child->n, this->child_n)
     );
   }
 
@@ -100,7 +100,9 @@ Point MCTS::get_move(int times){
   
   std::vector<float> n_list;
   for(Node* child: root->childs){
-    n_list.push_back(-(child->w/child->n));
+    n_list.push_back(
+      ucb(-child->w, child->n, root->child_n)
+    );
   }
   
   auto actions = root->state->legal_actions;

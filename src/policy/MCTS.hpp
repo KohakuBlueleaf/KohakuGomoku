@@ -21,6 +21,7 @@
 
 template<class Iter>
 inline size_t argmax(Iter first, Iter last);
+inline float ucb(float w, float n, int t);
 
 class MCTS{
 public:
@@ -33,7 +34,6 @@ public:
       Node(State *state);
       ~Node();
 
-      static float ucb(int t, float n, float w);
       static int playout(State *state, bool root);
       float eval();
       void expand();

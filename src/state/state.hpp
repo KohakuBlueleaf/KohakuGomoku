@@ -4,8 +4,8 @@
 #include <array>
 #include <bitset>
 #include <algorithm>
+#include "../config.hpp"
 
-#define SIZE 15
 #define MINF -2147483647
 #define INF 2147483647
 

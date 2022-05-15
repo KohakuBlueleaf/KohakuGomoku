@@ -23,10 +23,10 @@ $(BUILDDIR):
 
 ifeq ($(OS),Windows_NT)
 $(TARGET): % : $(SOURCESDIR)/%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@.exe $<
+	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@.exe $(SOURCESDIR)/state/state.cpp $< 
 else
 $(TARGET): % : $(SOURCESDIR)/%.cpp
-	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@ $<
+	$(CXX) -Wall -Wextra $(CXXFLAGS) -o $(BUILDDIR)/$@ $< 
 endif
 
 clean:

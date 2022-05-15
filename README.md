@@ -17,6 +17,10 @@ If you only want to build some specific policy, use this.
 make main #necessary!!!
 make <POLICY>
 ```
+for example
+```bash
+make alphabeta #will create player_alphabeta.exe at build/ folder
+```
 
 Finally
 ```bash

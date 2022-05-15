@@ -97,6 +97,7 @@ void State::get_legal_actions(void){
   std::vector<Point> actions;
   Board_Min point;
   bool initial = true;
+  
   for(auto p: move_list){
     if(board[0][p.x][p.y]==0){
       initial = false;

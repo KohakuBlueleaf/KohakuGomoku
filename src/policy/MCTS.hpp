@@ -11,15 +11,23 @@
 #define MINF -2147483647
 #define INF 2147483647
 
+// 100~500 is better expand thershold for this case(15*15 gomoku 10sec)
+#define EXPAND_THERSHOLD 300
+
+// theoretically the C should be sqrt(2) but sqrt(2)/2 is the best one
+// maybe the real "Uncertainty" of our algorithm is not like others.
+// I actually don't know why
+#define C 0.7 
+
 template<class Iter>
 inline size_t argmax(Iter first, Iter last);
 
 class MCTS{
-  public:
+public:
   class Node{
     public:
       State *state;
-      float w, n;
+      float w, n, child_n;
       std::vector<Node*> childs;
 
       Node(State *state);
@@ -34,8 +42,9 @@ class MCTS{
 
   MCTS(State* state);
   ~MCTS();
-  
+
   Point get_move(int times);
-  private:
-    Node* root;
+
+private:
+  Node* root;
 };

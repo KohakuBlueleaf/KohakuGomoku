@@ -4,16 +4,17 @@
 #include "state/state.hpp"
 #include "policy/alphabeta.hpp"
 
+
 State root;
 void read_board(std::ifstream& fin) {
   Board board;
   int player;
   fin >> player;
+
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j < SIZE; j++) {
       board[0][i][j] = board[1][i][j] = board[2][i][j] = 0;
-      int temp;
-      fin >> temp;
+      int temp; fin >> temp;
       board[temp][i][j] = 1;
     }
   }

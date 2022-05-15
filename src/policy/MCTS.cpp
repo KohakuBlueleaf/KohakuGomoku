@@ -9,10 +9,6 @@ inline size_t argmax(Iter first, Iter last){
   return std::distance(first, std::max_element(first, last));
 }
 
-
-#define EXPAND_THERSHOLD 500
-#define C 0.7
-
 /*
 declartion of MCTS::Node
 */
@@ -45,6 +41,7 @@ int MCTS::Node::playout(State *state, bool root){
 float MCTS::Node::eval(){
   float value;
   GAME_STATE res = this->state->check_res();
+  
   if(res == NONE){
     if(childs.empty()){
       value = playout(this->state, true);
@@ -52,6 +49,7 @@ float MCTS::Node::eval(){
         expand();
     }else{
       value = -next_child().eval();
+      this->child_n += 1;
     }
   }else{
     value = res==LOSE ? -1 : 0;
@@ -70,9 +68,7 @@ void MCTS::Node::expand(){
 };
 
 MCTS::Node& MCTS::Node::next_child(){
-  int t = 0;
   for(Node* child: this->childs){
-    t += child->n;
     if(child->n == 0)
       return *child;
   }
@@ -80,7 +76,7 @@ MCTS::Node& MCTS::Node::next_child(){
   std::vector<float> ucb1;
   for(Node* child: this->childs){
     ucb1.push_back(
-      -(child->w/child->n) + C*sqrt(log(t)/child->n)
+      -(child->w/child->n) + C*sqrt(log(this->child_n)/child->n)
     );
   }
 
@@ -99,13 +95,12 @@ MCTS::~MCTS(){
   delete root;
 }
 Point MCTS::get_move(int times){
-  for(int i=0; i<times; ++i){
+  for(int i=0; i<times; ++i)
     root->eval();
-  }
   
   std::vector<float> n_list;
   for(Node* child: root->childs){
-    n_list.push_back((-child->w / (child->n+1)));
+    n_list.push_back(-(child->w/child->n));
   }
   
   auto actions = root->state->legal_actions;

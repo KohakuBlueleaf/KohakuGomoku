@@ -28,7 +28,8 @@ public:
   class Node{
     public:
       State *state;
-      float w, n, child_n;
+      float w, n;
+      int child_n;
       std::vector<Node*> childs;
 
       Node(State *state);

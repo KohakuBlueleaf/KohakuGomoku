@@ -79,22 +79,3 @@ public:
   GAME_STATE check_res();
   int eval();
 };
-
-class FullState{
-private:
-  Board board;
-  int player;
-  GAME_STATE res = UNKNOWN;
-  
-  //get all legal actions by board[0](empty place)
-  void get_legal_actions(void);
-
-public:
-  std::vector<Point> legal_actions;
-  FullState(){};
-  FullState(Board board, int player);
-
-  //get next state after a move
-  FullState& next_state(Point move);
-  GAME_STATE check_res();
-};

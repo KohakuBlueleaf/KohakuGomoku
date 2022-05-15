@@ -17,7 +17,7 @@ declartion of MCTS::Node
 */
 MCTS::Node::Node(State *state):
 state(state){
-  this->w = this->n = 0;
+  this->w = this->n = this->child_n = 0;
 };
 MCTS::Node::~Node(){
   delete this->state;
@@ -101,7 +101,7 @@ Point MCTS::get_move(int times){
   std::vector<float> n_list;
   for(Node* child: root->childs){
     n_list.push_back(
-      ucb(-child->w, child->n, root->child_n)
+      -child->w/child->n
     );
   }
   

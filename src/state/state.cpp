@@ -40,27 +40,25 @@ static bool check_5(Board_Min board){
         & board[i+1]
         & board[i+2]
         & board[i+3]
-        & board[i+4]).to_ulong())
+        & board[i+4]).any())
       return true;
 
     if((board[i]
         & (board[i+1]>>1)
         & (board[i+2]>>2)
         & (board[i+3]>>3)
-        & (board[i+4]>>4)).to_ulong())
+        & (board[i+4]>>4)).any())
       return true;
 
     if((board[i]
         & (board[i+1]<<1)
         & (board[i+2]<<2)
         & (board[i+3]<<3)
-        & (board[i+4]<<4)).to_ulong())
+        & (board[i+4]<<4)).any())
       return true;
-  }
-
-  for(int i=0; i<SIZE; i+=1){
-    for(int j=0; j<SIZE-4; j+=1){
-      if(((board[i]>>j)&=0b11111) == 0b11111)
+    
+    for(int j=0; j<SIZE; j+=1){
+      if(((board[j]>>i)&=0b11111) == 0b11111)
         return true;
     }
   }
@@ -72,39 +70,39 @@ static bool check_4(Board_Min board, Board_Min avail){
         & board[i+1]
         & board[i+2]
         & board[i+3]
-        & board[i+4]).to_ulong())
+        & board[i+4]).any())
       return true;
     if((board[i]
         & board[i+1]
         & board[i+2]
         & board[i+3]
-        & avail[i+4]).to_ulong())
+        & avail[i+4]).any())
       return true;
 
     if((avail[i]
         & (board[i+1]>>1)
         & (board[i+2]>>2)
         & (board[i+3]>>3)
-        & (board[i+4]>>4)).to_ulong())
+        & (board[i+4]>>4)).any())
       return true;
     if((board[i]
         & (board[i+1]>>1)
         & (board[i+2]>>2)
         & (board[i+3]>>3)
-        & (avail[i+4]>>4)).to_ulong())
+        & (avail[i+4]>>4)).any())
       return true;
 
     if((avail[i]
         & (board[i+1]<<1)
         & (board[i+2]<<2)
         & (board[i+3]<<3)
-        & (board[i+4]<<4)).to_ulong())
+        & (board[i+4]<<4)).any())
       return true;
     if((board[i]
         & (board[i+1]<<1)
         & (board[i+2]<<2)
         & (board[i+3]<<3)
-        & (avail[i+4]<<4)).to_ulong())
+        & (avail[i+4]<<4)).any())
       return true;
   }
 

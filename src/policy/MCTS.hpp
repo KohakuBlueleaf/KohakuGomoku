@@ -16,7 +16,7 @@
 // and surprisngly 300 is the best option(even better than 1)
 // may caused by the playout/expand strategy and the time limit
 #define EXPAND_THRESHOLD 300
-#define ITERATION_LIMIT 500
+#define ITERATION_LIMIT 1000
 
 // theoretically the C should be sqrt(2) but sqrt(2)/2 is the best one
 // maybe the real "Uncertainty" of our algorithm is not like others.
@@ -26,7 +26,6 @@
 template<class Iter>
 inline size_t argmax(Iter first, Iter last);
 inline float ucb(float w, float n, int t);
-inline int tau(float alpha, int r);
 
 
 class MCTS{

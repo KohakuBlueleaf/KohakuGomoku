@@ -54,8 +54,8 @@ float MCTS::Node::eval(){
       the best C of UCB1 and the threshold are diffrent from normal.
       */
       value = playout(this->state, true);
-#if EXPAND_TERHOLD>1
-      if(n >= EXPAND_THERSHOLD)
+#if EXPAND_THRESHOLD > 1
+      if(n >= EXPAND_THRESHOLD)
         expand();
 #else
       expand();

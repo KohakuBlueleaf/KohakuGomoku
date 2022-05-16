@@ -171,44 +171,55 @@ static int count_4(Board_Min board, Board_Min avail){
 }
 static int count_3_op(Board_Min board, Board_Min avail){
   int res = 0;
-  for(int i=0; i<SIZE-3; i+=1){
+  for(int i=0; i<SIZE-2; i+=1){
+    Row avail_check;
     // vertically
+    avail_check = Row(0);
+    if(i>0 && i<SIZE-3)
+      avail_check |= avail[i-1] & avail[i+3];
+    if(i>1)
+      avail_check |= avail[i-1] & avail[i-2];
+    if(i<SIZE-4)
+      avail_check |= avail[i+3] & avail[i+4];
     res += (
-      avail[i] & board[i+1] & board[i+2] & board[i+3]
-    ).count();
-    res += (
-      board[i] & board[i+1] & board[i+2] & avail[i+3]
+      avail_check & board[i] & board[i+1] & board[i+2]
     ).count();
 
     // cross l-up to r-bottom
+    avail_check = Row(0);
+    if(i>0 && i<SIZE-3)
+      avail_check |= (avail[i-1]<<1) & (avail[i+3]>>3);
+    if(i>1)
+      avail_check |= (avail[i-1]<<2) & (avail[i-2]<<2);
+    if(i<SIZE-4)
+      avail_check |= (avail[i+3]>>3) & (avail[i+4]>>4);
     res += (
-      avail[i]
-      & (board[i+1]>>1) & (board[i+2]>>2) & (board[i+3]>>3)
-    ).count();
-    res += (
-      board[i] & (board[i+1]>>1) & (board[i+2]>>2)
-      & (avail[i+3]>>3)
+      avail_check & board[i] & (board[i+1]>>1) & (board[i+2]>>2)
     ).count();
 
     // cross r-up to l-bottom
+    avail_check = Row(0);
+    if(i>0 && i<SIZE-3)
+      avail_check |= (avail[i-1]>>1) & (avail[i+3]<<3);
+    if(i>1)
+      avail_check |= (avail[i-1]>>2) & (avail[i-2]>>2);
+    if(i<SIZE-4)
+      avail_check |= (avail[i+3]<<3) & (avail[i+4]<<4);
     res += (
-      avail[i]
-      & (board[i+1]<<1) & (board[i+2]<<2) & (board[i+3]<<3)
-    ).count();
-    res += (
-      board[i] & (board[i+1]<<1) & (board[i+2]<<2)
-      & (avail[i+3]<<3)
+      avail_check & board[i] & (board[i+1]<<1) & (board[i+2]<<2)
     ).count();
 
     // horizontally
     for(int j=0; j<SIZE; j+=1){
+      bool avail_check = false;
+      if(i>0 && i<SIZE-3)
+        avail_check |= avail[j][SIZE-i]&avail[j][SIZE-i-4];
+      if(i>1)
+        avail_check |= avail[j][SIZE-i]&avail[j][SIZE-i+1];
+      if(i<SIZE-4)
+        avail_check |= avail[j][SIZE-i-4]&avail[j][SIZE-i-5];
       res += (
-        ((board[j]>>i)&=0b0111) == 0b0111 
-        && ((avail[j]>>i)&=0b1000) == 0b1000
-      );
-      res += (
-        ((board[j]>>i)&=0b1110) == 0b1110 
-        && ((avail[j]>>i)&=0b0001) == 0b0001
+        ((board[j]>>i)&=0b111) == 0b111 && avail_check
       );
     }
   }

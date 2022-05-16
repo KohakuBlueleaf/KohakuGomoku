@@ -44,9 +44,22 @@ float MCTS::Node::eval(){
   
   if(res == NONE){
     if(childs.empty()){
+      /*
+      This MCTS playout/expand strategy is different
+      when this node is choosed, it playout "once" and return.
+      until this node been choosed more than the Thershold, it expand.
+      so a node can run playout from 1~threshold Times, 
+      depands on how many times it be choosed.
+      due to this strategy, 
+      the best C of UCB1 and the threshold are diffrent from normal.
+      */
       value = playout(this->state, true);
+#if EXPAND_TERHOLD>1
       if(n >= EXPAND_THERSHOLD)
         expand();
+#else
+      expand();
+#endif
     }else{
       value = -next_child().eval();
       this->child_n += 1;

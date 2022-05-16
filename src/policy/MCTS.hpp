@@ -11,17 +11,23 @@
 #define MINF -2147483647
 #define INF 2147483647
 
-// 100~500 is better expand thershold for this case(15*15 gomoku 10sec)
-#define EXPAND_THERSHOLD 300
+// theoretically this param should be 1
+// but you need to consider the memory comsumption
+// and surprisngly 300 is the best option(even better than 1)
+// may caused by the playout/expand strategy and the time limit
+#define EXPAND_THRESHOLD 300
+#define ITERATION_LIMIT 500
 
 // theoretically the C should be sqrt(2) but sqrt(2)/2 is the best one
 // maybe the real "Uncertainty" of our algorithm is not like others.
-// I actually don't know why
-#define C 0.7 
+// I also don't know why
+#define C 0.7071067811865476
 
 template<class Iter>
 inline size_t argmax(Iter first, Iter last);
 inline float ucb(float w, float n, int t);
+inline int tau(float alpha, int r);
+
 
 class MCTS{
 public:

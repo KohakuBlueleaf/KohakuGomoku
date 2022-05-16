@@ -24,9 +24,6 @@ enum GAME_STATE {
 };
 
 
-//use bitset to build board
-typedef std::array<std::bitset<SIZE>, SIZE> Board_Min;
-typedef std::array<Board_Min, 3> Board;
 struct Point {
   int x, y;
 	Point() : Point(0, 0) {}
@@ -45,6 +42,10 @@ struct Point {
 	}
 };
 
+
+//use bitset to build board
+typedef std::array<std::bitset<SIZE>, SIZE> Board_Min;
+typedef std::array<Board_Min, 3> Board;
 
 extern std::vector<Point> move_list;
 extern void move_list_init();

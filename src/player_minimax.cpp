@@ -23,7 +23,6 @@ void read_board(std::ifstream& fin) {
 }
 
 void write_valid_spot(std::ofstream& fout) {
-  srand(time(NULL));
   auto moves = root.legal_actions;
   for(auto move:moves){
     if(root.next_state(move).check_res() == LOSE){
@@ -47,6 +46,7 @@ void write_valid_spot(std::ofstream& fout) {
 }
 
 int main(int, char** argv) {
+  srand(RANDOM_SEED);
   std::ifstream fin(argv[1]);
   std::ofstream fout(argv[2]);
 

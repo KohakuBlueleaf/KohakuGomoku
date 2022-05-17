@@ -4,6 +4,7 @@
 #include <cmath>
 #include "MCTS.hpp"
 
+
 template<class Iter>
 inline size_t argmax(Iter first, Iter last){
   return std::distance(first, std::max_element(first, last));
@@ -12,6 +13,7 @@ inline float ucb(float w, float n, int t){
   return w/n + C*sqrt(log(t)/n);
 }
 
+
 /*
 declartion of MCTS::Node
 */
@@ -19,6 +21,7 @@ MCTS::Node::Node(State *state):
 state(state){
   this->w = this->n = this->child_n = 0;
 };
+
 MCTS::Node::~Node(){
   delete this->state;
   for(Node* child: this->childs){
@@ -41,6 +44,7 @@ int MCTS::Node::playout(State *state, bool root){
   delete state;
   return res==LOSE ? -1 : 0;
 };
+
 float MCTS::Node::eval(){
   float value;
   GAME_STATE res = this->state->check_res();
@@ -49,12 +53,12 @@ float MCTS::Node::eval(){
     if(childs.empty()){
       /*
       This MCTS playout/expand strategy is different
-      when this node is choosed, it playout "once" and return.
-      until this node been choosed more than the Thershold, it expand.
-      so a node can run playout from 1~threshold Times, 
+      When this node is choosed, it playout "once" and return.
+      And when this node has been choosed more than the Threshold, it expand.
+      So a node can run playout 1~threshold times, 
       depands on how many times it be choosed.
-      due to this strategy, 
-      the best C of UCB1 and the threshold are diffrent from normal.
+      Due to this strategy(maybe), 
+      the best C of UCB1 are diffrent from normal.
       */
       value = playout(this->state, true);
 #if EXPAND_THRESHOLD > 1
@@ -107,9 +111,11 @@ MCTS::MCTS(State* state){
   root = new MCTS::Node(state);
   root->expand();
 }
+
 MCTS::~MCTS(){
   delete root;
 }
+
 Point MCTS::get_move(int times){
   for(int i=0; i<times; ++i)
     root->eval();

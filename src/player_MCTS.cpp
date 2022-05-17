@@ -40,7 +40,7 @@ void write_valid_spot(std::ofstream& fout) {
   MCTS mcts(&root);
   int iters;
   //the limit of iterations is for memory usage limitation
-  for(iters=0; iters < ITERATION_LIMIT; ++iters){
+  for(iters=0; iters < EPOCH; ++iters){
     auto move = mcts.get_move(ITER);
     fout << move.x << " " << move.y << std::endl;
     fout.flush();

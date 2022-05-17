@@ -13,15 +13,21 @@
 
 // theoretically this param should be 1
 // but you need to consider the memory comsumption
-// and surprisngly 300 is the best option(even better than 1)
-// may caused by the playout/expand strategy and the time limit
-#define EXPAND_THRESHOLD 300
-#define ITERATION_LIMIT 1000
+// so 5~20 is a better choice for EXPAND_TRESHOLD
+// and the EPOCH limit is also for avoiding run out of memory
+// 
+// A reference of the memory usage:
+// Epoch limit: 100
+// iters/epoch: 1000
+// expand threshold: 1
+// memory usage: 1~2GB
+#define EXPAND_THRESHOLD 10
+#define EPOCH 500
 
-// theoretically the C should be sqrt(2) but sqrt(2)/2 is the best one
-// maybe the real "Uncertainty" of our algorithm is not like others.
-// I also don't know why
-#define C 0.7071067811865476
+// Theoretically the C should be sqrt(2)
+// but sqrt(2)/2 is the best for this use case.
+// Maybe the real "Uncertainty" of our algorithm is not like others.
+#define C 0.707
 
 template<class Iter>
 inline size_t argmax(Iter first, Iter last);

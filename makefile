@@ -12,13 +12,8 @@ POLICY_DIR = $(SOURCES_DIR)/policy
 
 TARGET_PLAYER = $(PLAYERS:$(SOURCES_DIR)/player_%.cpp=%)
 TARGET_MAIN = main
-
-ifeq ($(OS),Windows_NT)
-EXE = $(SOURCES:$(SOURCES_DIR)/%.cpp=%.exe)
-else
-EXE = $(SOURCES:$(SOURCES_DIR)/%.cpp=%)
-endif
 OTHER = action state gamelog.txt
+
 
 .PHONY: all clean
 
@@ -42,7 +37,7 @@ endif
 
 clean:
 ifeq ($(OS), Windows_NT)
-	del /f $(TARGET) $(OTHER)
+	del /f build\main.exe $(OTHER:%=$(BUILD_DIR)\%) $(TARGET_PLAYER:%=$(BUILD_DIR)\player_%.exe)
 else
-	rm -f $(TARGET) $(OTHER)
+	rm -f build/main $(OTHER:%=$(BUILD_DIR)/%) $(TARGET_PLAYER:%=$(BUILD_DIR)/player_%)
 endif

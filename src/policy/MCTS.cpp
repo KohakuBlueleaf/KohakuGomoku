@@ -21,6 +21,9 @@ state(state){
 };
 MCTS::Node::~Node(){
   delete this->state;
+  for(Node* child: this->childs){
+    delete child;
+  }
 }
 
 int MCTS::Node::playout(State *state, bool root){

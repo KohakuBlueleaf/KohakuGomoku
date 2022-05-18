@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
+#include <vector>
+#include <queue>
 #include "MCTS.hpp"
 
 
@@ -19,7 +21,8 @@ declartion of MCTS::Node
 */
 MCTS::Node::Node(State *state):
 state(state){
-  this->w = this->n = this->child_n = 0;
+  this->w = this->n = this->child_n = this->now_child_n = 0;
+  this->expand_flag = false;
 };
 
 MCTS::Node::~Node(){
@@ -50,7 +53,7 @@ float MCTS::Node::eval(){
   GAME_STATE res = this->state->check_res();
   
   if(res == NONE){
-    if(childs.empty()){
+    if(!this->expand_flag){
       /*
       This MCTS playout/expand strategy is different
       When this node is choosed, it playout "once" and return.
@@ -63,12 +66,17 @@ float MCTS::Node::eval(){
       value = playout(this->state, true);
 #if EXPAND_THRESHOLD > 1
       if(n >= EXPAND_THRESHOLD)
-        expand();
+        this->expand_flag = true;
 #else
-      expand();
+      this->expand_flag = true;
 #endif
     }else{
-      value = -next_child().eval();
+      if(now_child_n != this->state->legal_actions.size()){
+        expand();
+        value = -this->childs.back()->eval();
+      }else{
+        value = -next_child().eval();
+      }
       this->child_n += 1;
     }
   }else{
@@ -80,19 +88,17 @@ float MCTS::Node::eval(){
 }
 
 void MCTS::Node::expand(){
-  std::vector<Node*> temp;
-  for(auto move: state->legal_actions)
-    temp.push_back(new Node(&state->next_state(move)));
-  
-  this->childs = temp;
+  this->childs.push_back(
+    new Node(
+      &this->state->next_state(
+        this->state->legal_actions[this->now_child_n]
+      )
+    )
+  );
+  this->now_child_n += 1;
 };
 
 MCTS::Node& MCTS::Node::next_child(){
-  for(Node* child: this->childs){
-    if(child->n == 0)
-      return *child;
-  }
-
   std::vector<float> ucb1;
   for(Node* child: this->childs){
     ucb1.push_back(
@@ -129,4 +135,17 @@ Point MCTS::get_move(int times){
   
   auto actions = root->state->legal_actions;
   return actions[argmax(std::begin(n_list), std::end(n_list))];
+}
+int MCTS::count_nodes(){
+  int all = root->childs.size();
+  std::queue<std::vector<Node*>> queue;
+  queue.push(root->childs);
+  while(!queue.empty()){
+    auto now = queue.front(); queue.pop();
+    all += now.size();
+    for(auto nexts: now){
+      queue.push(nexts->childs);
+    }
+  };
+  return all;
 }

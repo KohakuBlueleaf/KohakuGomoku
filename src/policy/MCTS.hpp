@@ -20,9 +20,9 @@
 // Epoch limit: 100
 // iters/epoch: 1000
 // expand threshold: 1
-// memory usage: 1~2GB
-#define EXPAND_THRESHOLD 10
-#define EPOCH 500
+// memory usage: 80~150MB
+#define EXPAND_THRESHOLD 1
+#define EPOCH 10000
 
 // Theoretically the C should be sqrt(2)
 // but sqrt(2)/2 is the best for this use case.
@@ -41,8 +41,10 @@ public:
       State *state;
       float w, n;
       int child_n;
+      size_t now_child_n;
+      bool expand_flag;
       std::vector<Node*> childs;
-
+      
       Node(State *state);
       ~Node();
 
@@ -56,7 +58,7 @@ public:
   ~MCTS();
 
   Point get_move(int times);
-
+  int count_nodes();
 private:
   Node* root;
 };

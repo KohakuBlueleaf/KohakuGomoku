@@ -152,20 +152,20 @@ static int count_4(Board_Min board, Board_Min avail){
         & (board[i+2]<<2)
         & (board[i+3]<<3)
         & (avail[i+4]<<4)).count();
-  }
 
-  for(int i=0; i<SIZE; i+=1){
-    for(int j=0; j<SIZE-4; j+=1){
+    for(int j=0; j<SIZE; j+=1){
       res += (
-        ((board[i]>>j)&=0b11110) == 0b11110
-        && ((avail[i]>>j)&=0b00001) == 0b00001
+        ((board[j]>>i)&=0b11110) == 0b11110
+        && ((avail[j]>>i)&=0b00001) == 0b00001
       );
 
       res += (
-        ((board[i]>>j)&=0b01111) == 0b01111
-        && ((avail[i]>>j)&=0b10000) == 0b10000
+        ((board[j]>>i)&=0b01111) == 0b01111
+        && ((avail[j]>>i)&=0b10000) == 0b10000
       );
     }
+    if(res>2)
+      return res;
   }
   return res;
 }
@@ -213,13 +213,13 @@ static int count_3_op(Board_Min board, Board_Min avail){
     for(int j=0; j<SIZE; j+=1){
       bool avail_check = false;
       if(i>0 && i<SIZE-3)
-        avail_check |= avail[j][SIZE-i]&avail[j][SIZE-i-4];
+        avail_check |= avail[j][SIZE-i]&&avail[j][SIZE-i-4];
       if(i>1)
-        avail_check |= avail[j][SIZE-i]&avail[j][SIZE-i+1];
+        avail_check |= avail[j][SIZE-i]&&avail[j][SIZE-i+1];
       if(i<SIZE-4)
-        avail_check |= avail[j][SIZE-i-4]&avail[j][SIZE-i-5];
+        avail_check |= avail[j][SIZE-i-4]&&avail[j][SIZE-i-5];
       res += (
-        ((board[j]>>i)&=0b111) == 0b111 && avail_check
+        avail_check && (((board[j]>>i)&=0b111) == 0b111)
       );
     }
   }
@@ -315,11 +315,11 @@ int State::eval(){
   Board_Min self = board[this->player];
   Board_Min avail = board[0];
   if(check_5(self) || check_4(self, avail))
-    return 50;
+    return INF;
 
   Board_Min opnt = board[next_player[this->player]];
   if(count_4(opnt, avail)>1)
-    return -50;
+    return MINF;
 
   return count_3_op(self, avail)-count_3_op(opnt, avail);
 }

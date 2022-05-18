@@ -315,11 +315,11 @@ int State::eval(){
   Board_Min self = board[this->player];
   Board_Min avail = board[0];
   if(check_5(self) || check_4(self, avail))
-    return INF;
+    return 1000000;
 
   Board_Min opnt = board[next_player[this->player]];
   if(count_4(opnt, avail)>1)
-    return MINF;
+    return -1000000;
 
   return count_3_op(self, avail)-count_3_op(opnt, avail);
 }

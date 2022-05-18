@@ -105,7 +105,7 @@ public:
       for (int j = 0; j < SIZE; j++) {
         if (is_disc_at(Point(i, j), disc)){
           bool iswin = true;
-          if (i + 5 < SIZE) {
+          if (i + 4 < SIZE) {
             for(int k = 0; k < 5; k++)
               if (!is_disc_at(Point(i+k, j), disc)) {
                 iswin = false;
@@ -114,7 +114,7 @@ public:
             if (iswin) return true;
           }
           iswin = true;
-          if (j + 5 < SIZE) {
+          if (j + 4 < SIZE) {
             for(int k = 0; k < 5; k++)
               if (!is_disc_at(Point(i, j+k), disc)) {
                 iswin = false;
@@ -123,7 +123,7 @@ public:
             if (iswin) return true;
           }
           iswin = true;
-          if (i + 5 < SIZE && j + 5 < SIZE) {
+          if (i + 4 < SIZE && j + 4 < SIZE) {
             for(int k = 0; k < 5; k++)
               if (!is_disc_at(Point(i+k, j+k), disc)) {
                 iswin = false;
@@ -132,7 +132,7 @@ public:
             if (iswin) return true;
           }
           iswin = true;
-          if (i - 5 >= 0 && j + 5 < SIZE) {
+          if (i - 4 >= 0 && j + 4 < SIZE) {
             for(int k = 0; k < 5; k++)
               if (!is_disc_at(Point(i-k, j+k), disc)) {
                 iswin = false;

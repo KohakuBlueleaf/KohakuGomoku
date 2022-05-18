@@ -61,7 +61,7 @@ float MCTS::Node::eval(){
       So a node can run playout 1~threshold times, 
       depands on how many times it be choosed.
       Due to this strategy(maybe), 
-      the best C of UCB1 are diffrent from normal.
+      the best C of UCB1 can be diffrent from normal.
       */
       value = playout(this->state, true);
 #if EXPAND_THRESHOLD > 1

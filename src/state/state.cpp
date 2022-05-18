@@ -4,7 +4,6 @@
 #include <algorithm>
 #include "state.hpp"
 
-const int next_player[3] = {0,2,1}; 
 std::vector<Point> move_list;
 
 // get all the point on the board
@@ -269,7 +268,7 @@ State& State::next_state(Point move){
   // create next state
   State *next = new State();
   next->board = new_board;
-  next->player = next_player[player];
+  next->player = 3-player;
   
   // get the legal actions for next state
   Board_Min point;
@@ -297,7 +296,7 @@ State& State::next_state(Point move){
 GAME_STATE State::check_res(){
   if(res!=UNKNOWN)
     return res;
-  Board_Min next = board[next_player[this->player]];
+  Board_Min next = board[3-this->player];
   if(check_5(next)){
     res = LOSE;
     return LOSE;
@@ -317,7 +316,7 @@ int State::eval(){
   if(check_5(self) || check_4(self, avail))
     return 1000000;
 
-  Board_Min opnt = board[next_player[this->player]];
+  Board_Min opnt = board[3-this->player];
   if(count_4(opnt, avail)>1)
     return -1000000;
 

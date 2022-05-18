@@ -9,8 +9,6 @@
 #define MINF -2147483647
 #define INF 2147483647
 
-extern const int next_player[3]; 
-
 enum SPOT_STATE {
   EMPTY = 0,
   BLACK = 1,

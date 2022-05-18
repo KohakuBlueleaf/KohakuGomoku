@@ -51,7 +51,9 @@ $(TARGET_MERGE_MAIN): merge_% : $(SOURCES_DIR)/%.cpp
 
 clean:
 ifeq ($(OS), Windows_NT)
-	del /f build\main.exe $(OTHER:%=$(BUILD_DIR)\%) $(TARGET_PLAYER:%=$(BUILD_DIR)\player_%.exe)
+	del /f $(BUILD_DIR)\main.exe $(OTHER:%=$(BUILD_DIR)\\%) $(TARGET_PLAYER:%=$(BUILD_DIR)\player_%.exe)
+	del /f $(BUILD_DIR)\merged\main_merged.cpp $(TARGET_PLAYER:%=$(BUILD_DIR)\merged\player_%_merged.cpp)
 else
-	rm -f build/main $(OTHER:%=$(BUILD_DIR)/%) $(TARGET_PLAYER:%=$(BUILD_DIR)/player_%)
+	rm -f $(BUILD_DIR)/main $(OTHER:%=$(BUILD_DIR)/%) $(TARGET_PLAYER:%=$(BUILD_DIR)/player_%)
+	rm -f $(BUILD_DIR)/merged/main_merged.cpp $(TARGET_PLAYER:%=$(BUILD_DIR)/merged/player_%_merged.cpp)
 endif

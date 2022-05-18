@@ -33,27 +33,27 @@ $(MERGE_DIR):
 # build target
 ifeq ($(OS), Windows_NT)
 $(TARGET_PLAYER): % : $(SOURCES_DIR)/player_%.cpp
-	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@.exe $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/player_$@.exe $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
 $(TARGET_MAIN): % : $(SOURCES_DIR)/%.cpp
 	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@.exe $< 
 else
 $(TARGET_PLAYER): % : $(SOURCES_DIR)/player_%.cpp
-	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@ $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/player_$@ $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
 $(TARGET_MAIN): % : $(SOURCES_DIR)/%.cpp
 	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@ $< 
 endif
 
 # build merge file
 $(TARGET_MERGE_PLAYER): merge_% : $(SOURCES_DIR)/player_%.cpp
-	$(CXX_MERGE) $< -o $(MERGE_DIR)/$*_merged.cpp 
+	$(CXX_MERGE) $< -o $(MERGE_DIR)/player_$*_merged.cpp 
 $(TARGET_MERGE_MAIN): merge_% : $(SOURCES_DIR)/%.cpp
 	$(CXX_MERGE) $< -o $(MERGE_DIR)/$*_merged.cpp 
 
 clean:
 ifeq ($(OS), Windows_NT)
-	del /f $(BUILD_DIR)\main.exe $(OTHER:%=$(BUILD_DIR)\\%) $(TARGET_PLAYER:%=$(BUILD_DIR)\%.exe)
-	del /f $(BUILD_DIR)\merged\main_merged.cpp $(TARGET_PLAYER:%=$(BUILD_DIR)\merged\%_merged.cpp)
+	del /f $(BUILD_DIR)\main.exe $(OTHER:%=$(BUILD_DIR)\\%) $(TARGET_PLAYER:%=$(BUILD_DIR)\player_%.exe)
+	del /f $(BUILD_DIR)\merged\main_merged.cpp $(TARGET_PLAYER:%=$(BUILD_DIR)\merged\player_%_merged.cpp)
 else
-	rm -f $(BUILD_DIR)/main $(OTHER:%=$(BUILD_DIR)/%) $(TARGET_PLAYER:%=$(BUILD_DIR)/%)
-	rm -f $(BUILD_DIR)/merged/main_merged.cpp $(TARGET_PLAYER:%=$(BUILD_DIR)/merged/%_merged.cpp)
+	rm -f $(BUILD_DIR)/main $(OTHER:%=$(BUILD_DIR)/%) $(TARGET_PLAYER:%=$(BUILD_DIR)/player_%)
+	rm -f $(BUILD_DIR)/merged/main_merged.cpp $(TARGET_PLAYER:%=$(BUILD_DIR)/merged/player_%_merged.cpp)
 endif

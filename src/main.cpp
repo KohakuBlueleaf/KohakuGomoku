@@ -7,6 +7,8 @@
 #include <cassert>
 #include "config.hpp"
 
+const char al[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 struct Point {
   int x, y;
   Point() : Point(0, 0) {}
@@ -151,14 +153,58 @@ public:
     return "Draw";
   }
   std::string encode_spot(int x, int y) {
-    if (is_spot_valid(Point(x, y))) return ".";
+    if (is_spot_valid(Point(x, y))) return " ";
     if (board[x][y] == BLACK) return "O";
     if (board[x][y] == WHITE) return "X";
     return " ";
   }
+
+  std::string encode_header(){
+    std::stringstream header;
+    header << "┌───";
+    for(int i=0; i<SIZE; i++)
+      header << "┬───";
+    header << "┬───┐\n";
+    header << "│   ";
+    for (int i=0; i<SIZE; i++){
+      header << "│";
+      if(i<9) header << ' ';
+      header << i+1 << ' ';
+    }
+    header << "│   │\n";
+    return header.str();
+  }
+
+  std::string encode_footer(){
+    std::stringstream footer;
+    footer << "│   ";
+    for (int i=0; i<SIZE; i++){
+      footer << "│";
+      if(i<9) footer << ' ';
+      footer << i+1 << ' ';
+    }
+    footer << "│   │\n";
+    footer << "└───";
+    for(int i=0; i<SIZE; i++)
+      footer << "┴───";
+    footer << "┴───┘\n";
+    return footer.str();
+  }
+
+  std::string encode_spliter(){
+    std::stringstream spliter;
+    spliter << "├───";
+    for(int i=0; i<SIZE; i++)
+      spliter << "┼───";
+    spliter << "┼───┤\n";
+    return spliter.str();
+  }
+
   std::string encode_output(bool fail=false) {
     int i, j;
     std::stringstream ss;
+    std::string spliter=encode_spliter();
+
     ss << "Timestep #" << (SIZE*SIZE-empty_count+1) << "\n";
     if (fail) {
       ss << "Winner is " << encode_player(winner) << " (Opponent performed invalid move)\n";
@@ -167,15 +213,20 @@ public:
     } else {
       ss << encode_player(cur_player) << "'s turn\n";
     }
-    ss << "+-----------------------------+\n";
+
+    ss << encode_header();
+    ss << spliter;
+
     for (i = 0; i < SIZE; i++) {
-      ss << "|";
-      for (j = 0; j < SIZE-1; j++) {
-        ss << encode_spot(i, j) << " ";
+      ss << "│ " << al[i] << " │";
+      for (j = 0; j < SIZE; j++) {
+        ss << " " << encode_spot(i, j) << " │";
       }
-      ss << encode_spot(i, j) << "|\n";
+      ss << " " << al[i] << " │";
+      ss << '\n' << spliter;
     }
-    ss << "===============================\n";
+
+    ss << encode_footer();
     return ss.str();
   }
   std::string encode_state() {
@@ -259,7 +310,8 @@ int main(int argc, char** argv) {
     }
     fin.close();
 
-    std::cout << "Put: (" << p.x << ',' << p.y << ")\n";
+    std::cout << "Put: " << al[p.x] << p.y+1 << "\n";
+    log << "Put: " << al[p.x] << p.y+1 << "\n";
     std::cout << "Depth: " << total << std::endl;
     // Reset action file
     if (remove(file_action.c_str()) != 0)
@@ -274,7 +326,7 @@ int main(int argc, char** argv) {
     }
     data = game.encode_output();
     std::cout << data;
-    log << data;
+    log << data << std::endl;
   }
   log.close();
   // Reset state file

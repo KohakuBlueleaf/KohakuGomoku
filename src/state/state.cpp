@@ -103,18 +103,15 @@ static bool check_4(Board_Min board, Board_Min avail){
         & (board[i+3]<<3)
         & (avail[i+4]<<4)).any())
       return true;
-  }
-
-  for(int i=0; i<SIZE; i+=1){
-    for(int j=0; j<SIZE-4; j+=1){
+    for(int j=0; j<SIZE; j+=1){
       if(
-        ((board[i]>>j)&=0b11110) == 0b11110
-        && ((avail[i]>>j)&=0b00001) == 0b00001
+        ((board[j]>>i)&=0b11110) == 0b11110
+        && ((avail[j]>>i)&=0b00001) == 0b00001
       )return true;
 
       if(
-        ((board[i]>>j)&=0b01111) == 0b01111
-        && ((avail[i]>>j)&=0b10000) == 0b10000
+        ((board[j]>>i)&=0b01111) == 0b01111
+        && ((avail[j]>>i)&=0b10000) == 0b10000
       )return true;
     }
   }
@@ -201,7 +198,7 @@ static int count_3_op(Board_Min board, Board_Min avail){
     if(i>0 && i<SIZE-3)
       avail_check |= (avail[i-1]>>1) & (avail[i+3]<<3);
     if(i>1)
-      avail_check |= (avail[i-1]>>2) & (avail[i-2]>>2);
+      avail_check |= (avail[i-1]>>1) & (avail[i-2]>>2);
     if(i<SIZE-4)
       avail_check |= (avail[i+3]<<3) & (avail[i+4]<<4);
     res += (

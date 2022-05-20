@@ -161,42 +161,62 @@ public:
 
   std::string encode_header(){
     std::stringstream header;
-    header << "┌───";
-    for(int i=0; i<SIZE; i++)
-      header << "┬───";
-    header << "┬───┐\n";
-    header << "│   ";
+    header << "┌───╥";
+    for(int i=0; i<SIZE; i++){
+      header << "───";
+      if(i!=SIZE-1)
+        header << "┬";
+    }
+    header << "╥───┐\n";
+    header << "│   ║";
     for (int i=0; i<SIZE; i++){
-      header << "│";
       if(i<9) header << ' ';
       header << i+1 << ' ';
+      if(i != SIZE-1) header << "│";
     }
-    header << "│   │\n";
+    header << "║   │\n";
     return header.str();
   }
 
   std::string encode_footer(){
     std::stringstream footer;
-    footer << "│   ";
+    footer << "│   ║";
     for (int i=0; i<SIZE; i++){
-      footer << "│";
       if(i<9) footer << ' ';
       footer << i+1 << ' ';
+      if(i != SIZE-1) footer << "│";
     }
-    footer << "│   │\n";
-    footer << "└───";
-    for(int i=0; i<SIZE; i++)
-      footer << "┴───";
-    footer << "┴───┘\n";
+    footer << "║   │\n";
+    footer << "└───╨";
+    for(int i=0; i<SIZE; i++){
+      footer << "───";
+      if(i!=SIZE-1)
+        footer << "┴";
+    }
+    footer << "╨───┘\n";
     return footer.str();
   }
 
   std::string encode_spliter(){
     std::stringstream spliter;
-    spliter << "├───";
-    for(int i=0; i<SIZE; i++)
-      spliter << "┼───";
-    spliter << "┼───┤\n";
+    spliter << "├───╫";
+    for(int i=0; i<SIZE; i++){
+      spliter << "───";
+      if(i!=SIZE-1)
+        spliter << "┼";
+    }
+    spliter << "╫───┤\n";
+    return spliter.str();
+  }
+  std::string encode_d_spliter(){
+    std::stringstream spliter;
+    spliter << "╞═══╬";
+    for(int i=0; i<SIZE; i++){
+      spliter << "═══";
+      if(i!=SIZE-1)
+        spliter << "╪";
+    }
+    spliter << "╬═══╡\n";
     return spliter.str();
   }
 
@@ -215,17 +235,21 @@ public:
     }
 
     ss << encode_header();
-    ss << spliter;
+    ss << encode_d_spliter();
 
     for (i = 0; i < SIZE; i++) {
-      ss << "│ " << al[i] << " │";
+      ss << "│ " << al[i] << " ║";
       for (j = 0; j < SIZE; j++) {
-        ss << " " << encode_spot(i, j) << " │";
+        ss << " " << encode_spot(i, j);
+        if(j != SIZE-1)
+          ss << " │";
       }
-      ss << " " << al[i] << " │";
-      ss << '\n' << spliter;
+      ss << " ║ " << al[i] << " │";
+      ss << '\n';
+      if(i!=SIZE-1)
+        ss << spliter;
     }
-
+    ss << encode_d_spliter();
     ss << encode_footer();
     return ss.str();
   }

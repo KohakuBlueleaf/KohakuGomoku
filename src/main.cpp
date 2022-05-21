@@ -337,6 +337,7 @@ int main(int argc, char** argv) {
     std::cout << "Put: " << al[p.x] << p.y+1 << "\n";
     log << "Put: " << al[p.x] << p.y+1 << "\n";
     std::cout << "Depth: " << total << std::endl;
+    log << "Depth: " << total << std::endl;
     // Reset action file
     if (remove(file_action.c_str()) != 0)
       std::cerr << "Error removing file: " << file_action << "\n";

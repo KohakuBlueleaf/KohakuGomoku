@@ -70,6 +70,7 @@ float MCTS::Node::eval(){
 #else
       this->expand_flag = true;
 #endif
+
     }else{
       if(now_child_n != this->state->legal_actions.size()){
         expand();
@@ -80,6 +81,7 @@ float MCTS::Node::eval(){
       this->child_n += 1;
     }
   }else{
+
     value = res==LOSE ? -1 : 0;
   }
   this->w += value;
@@ -95,6 +97,7 @@ void MCTS::Node::expand(){
       )
     )
   );
+
   this->now_child_n += 1;
 };
 
@@ -140,6 +143,7 @@ int MCTS::count_nodes(){
   int all = root->childs.size();
   std::queue<std::vector<Node*>> queue;
   queue.push(root->childs);
+
   while(!queue.empty()){
     auto now = queue.front(); queue.pop();
     all += now.size();
@@ -147,5 +151,6 @@ int MCTS::count_nodes(){
       queue.push(nexts->childs);
     }
   };
+  
   return all;
 }

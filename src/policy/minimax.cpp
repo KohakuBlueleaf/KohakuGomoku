@@ -1,14 +1,15 @@
-#include <tuple>
-#include <cstdlib>
 #include <ctime>
 #include <cmath>
 #include "minimax.hpp"
+
 
 template<class Iter>
 inline size_t argmax(Iter first, Iter last){
   return std::distance(first, std::max_element(first, last));
 }
 
+
+//Evaluate state with MiniMax
 int MiniMax::eval(State *state, int depth){
   GAME_STATE now_res = state->check_res();
   if(now_res == LOSE){
@@ -27,15 +28,17 @@ int MiniMax::eval(State *state, int depth){
 
   int best = MINF;
   for(auto move: state->legal_actions){
-    //負極大值
+    //negative max
     int score = -eval(&(state->next_state(move)), depth-1);
-    if(score>best)
+    if (score>best)
       best = score;
   }
   delete state;
   return best;
 };
 
+
+//Run MiniMax and get best move
 Point MiniMax::get_move(State *state, int depth){
   Point best_action = Point(-1, -1);
   int best_score = MINF;

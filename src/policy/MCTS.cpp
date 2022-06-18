@@ -1,5 +1,3 @@
-#include <tuple>
-#include <cstdlib>
 #include <ctime>
 #include <cmath>
 #include <vector>
@@ -17,13 +15,14 @@ inline float ucb(float w, float n, int t){
 
 
 /*
-declartion of MCTS::Node
+Declartion of MCTS::Node
 */
 MCTS::Node::Node(State *state):
 state(state){
   this->w = this->n = this->child_n = this->now_child_n = 0;
   this->expand_flag = false;
 };
+
 
 MCTS::Node::~Node(){
   delete this->state;
@@ -32,22 +31,29 @@ MCTS::Node::~Node(){
   }
 }
 
+
+//Random playout from state
 int MCTS::Node::playout(State *state, bool root){
   GAME_STATE res = state->check_res();
-  if(res==NONE){
+  
+  if (res == NONE){
+    //with negative max, val should be -val of next state.
     int index = rand()%state->legal_actions.size();
     int val = -playout(&state->next_state(state->legal_actions[index]), false);
-    if(root)
+    if (root)
       return val;
     else{
       delete state;
       return val;
     }
   }
+  
   delete state;
   return res==LOSE ? -1 : 0;
 };
 
+
+//Evaluate with MCTS algo
 float MCTS::Node::eval(){
   float value;
   GAME_STATE res = this->state->check_res();
@@ -70,7 +76,6 @@ float MCTS::Node::eval(){
 #else
       this->expand_flag = true;
 #endif
-
     }else{
       if(now_child_n != this->state->legal_actions.size()){
         expand();
@@ -81,14 +86,15 @@ float MCTS::Node::eval(){
       this->child_n += 1;
     }
   }else{
-
-    value = res==LOSE ? -1 : 0;
+    value = (res==LOSE ? -1 : 0);
   }
   this->w += value;
   this->n += 1;
   return value;
 }
 
+
+//Expand child nodes
 void MCTS::Node::expand(){
   this->childs.push_back(
     new Node(
@@ -101,6 +107,8 @@ void MCTS::Node::expand(){
   this->now_child_n += 1;
 };
 
+
+//Get next child with UCB1 algo.
 MCTS::Node& MCTS::Node::next_child(){
   std::vector<float> ucb1;
   for(Node* child: this->childs){
@@ -114,23 +122,27 @@ MCTS::Node& MCTS::Node::next_child(){
 
 
 /*
-declartion of MCTS
+Declaration of MCTS
 */
 MCTS::MCTS(State* state){
   root = new MCTS::Node(state);
   root->expand();
 }
 
+
 MCTS::~MCTS(){
   delete root;
 }
 
+
+//Run <times>times simulation and get the best move with MCTS
 Point MCTS::get_move(int times){
   for(int i=0; i<times; ++i)
     root->eval();
   
   std::vector<float> n_list;
   for(Node* child: root->childs){
+    //Negative max
     n_list.push_back(
       -child->w/child->n
     );
@@ -139,6 +151,9 @@ Point MCTS::get_move(int times){
   auto actions = root->state->legal_actions;
   return actions[argmax(std::begin(n_list), std::end(n_list))];
 }
+
+
+//For debug, count how many node in the game tree
 int MCTS::count_nodes(){
   int all = root->childs.size();
   std::queue<std::vector<Node*>> queue;

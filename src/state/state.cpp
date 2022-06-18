@@ -4,7 +4,9 @@
 #include <algorithm>
 #include "state.hpp"
 
+
 std::vector<Point> move_list;
+
 
 // get all the point on the board
 void move_list_init(){
@@ -12,6 +14,7 @@ void move_list_init(){
     for(int j=0; j<SIZE; ++j)
       move_list.push_back(Point(i,j));
 }
+
 
 // check if 5 discs on a row
 // use a tircky method to check if n-disc on a row
@@ -63,6 +66,8 @@ static bool check_5(Board_Min board){
   }
   return false;
 }
+
+
 static bool check_4(Board_Min board, Board_Min avail){
   for(int i=0; i<SIZE-4; i+=1){
     if((avail[i]
@@ -117,6 +122,8 @@ static bool check_4(Board_Min board, Board_Min avail){
   }
   return false;
 }
+
+
 static int count_4(Board_Min board, Board_Min avail){
   int res = 0;
   for(int i=0; i<SIZE-4; i+=1){
@@ -165,6 +172,8 @@ static int count_4(Board_Min board, Board_Min avail){
   }
   return res;
 }
+
+
 static int count_3_op(Board_Min board, Board_Min avail){
   int res = 0;
   for(int i=0; i<SIZE-2; i+=1){
@@ -233,11 +242,15 @@ static int count_3_op(Board_Min board, Board_Min avail){
   return res;
 }
 
-
+/*
+Declaration of State
+*/
 State::State(Board board, int player): board(board), player(player){
   this->get_legal_actions();
 };
 
+
+//Get legal actions around the existed discs
 void State::get_legal_actions(void){
   std::vector<Point> actions;
   Board_Min point;
@@ -265,7 +278,8 @@ void State::get_legal_actions(void){
   legal_actions = actions;
 };
 
-// get next state after a move
+
+//Get next state with a move
 State& State::next_state(Point move){
   Board new_board = this->board;
 
@@ -301,23 +315,25 @@ State& State::next_state(Point move){
   return *next;
 }
 
+
+//Check if this game is and or not
 GAME_STATE State::check_res(){
-  if(res!=UNKNOWN)
-    return res;
+  if (this->res != UNKNOWN)
+    return this->res;
+    
   Board_Min next = board[3-this->player];
-  if(check_5(next)){
-    res = LOSE;
-    return LOSE;
+  if (check_5(next)){
+    this->res = LOSE;
+  }else if (this->legal_actions.empty()){
+    this->res = DRAW;
+  }else{
+  this->res = NONE;
   }
-  
-  if(this->legal_actions.empty()){
-    res = DRAW;
-    return DRAW;
-  }
-  res = NONE;
-  return NONE;
+  return this->res;
 }
 
+
+//The State-Value function of this state
 int State::eval(){
   Board_Min self = board[this->player];
   Board_Min avail = board[0];

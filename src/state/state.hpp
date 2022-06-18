@@ -6,8 +6,12 @@
 #include <algorithm>
 #include "../config.hpp"
 
+#define max(a,b) ((a>b)?a:b)
+#define min(a,b) ((a<b)?a:b)
+
 #define MINF -2147483647
 #define INF 2147483647
+
 
 enum SPOT_STATE {
   EMPTY = 0,
@@ -66,7 +70,6 @@ private:
   int player;
   GAME_STATE res = UNKNOWN;
   
-  //get all legal actions by board[0](empty place)
   void get_legal_actions(void);
 
 public:
@@ -74,7 +77,6 @@ public:
   State(){};
   State(Board board, int player);
 
-  //get next state after a move
   State& next_state(Point move);
   GAME_STATE check_res();
   int eval();

@@ -35,7 +35,7 @@ void write_valid_spot(std::ofstream& fout) {
     return;
   // Keep updating the output until getting killed.
   int depth = 1;
-  while(true) {
+  while (true) {
     auto move = MiniMax::get_move(&root, depth);
     if(move.x != -1 && move.y != -1){
       fout << move.x << " " << move.y << std::endl;

@@ -13,7 +13,7 @@
 // expand threshold: 1
 // memory usage: 80~150MB
 #define EXPAND_THRESHOLD 1
-#define EPOCH 5
+#define EPOCH 1000
 
 // Theoretically the C should be sqrt(2)
 // but sqrt(2)/2 is the best for this use case.

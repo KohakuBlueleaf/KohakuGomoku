@@ -7,7 +7,9 @@
 #include <cassert>
 #include "config.hpp"
 
+
 const char al[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 
 struct Point {
   int x, y;

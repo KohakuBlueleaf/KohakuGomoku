@@ -1,5 +1,11 @@
 # KohakuGomoku
 
+## Requirments
+Compiler: should support c++14.<br>
+Other: for `make merge`, see [this](https://www.npmjs.com/package/cpp-merge).
+System: Been tested on Windows, MacOS, most of Linux distribution.
+(Tested under the lastest version at 2022/06)
+
 ## How to run
 First clone this repo and go into it.
 ```bash
@@ -26,4 +32,19 @@ Finally
 ```bash
 cd build
 ./main ./<POLICY> ./<POLICY>
+```
+
+### Merge to one file
+**Make sure you have installed cpp-merge**
+
+If you want to merge all cpp/hpp file into one file(For a make target).
+You can use
+```bash
+make merge
+```
+to build all merge file.
+
+And if you want to only merge specific target, use below command.
+```bash
+make merge_<target>
 ```

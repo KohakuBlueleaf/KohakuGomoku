@@ -29,7 +29,7 @@ int MiniMax::eval(State *state, int depth){
   int best = MINF;
   for(auto move: state->legal_actions){
     //negative max
-    int score = -eval(&(state->next_state(move)), depth-1);
+    int score = -eval(state->next_state(move), depth-1);
     if (score>best)
       best = score;
   }
@@ -44,7 +44,7 @@ Point MiniMax::get_move(State *state, int depth){
   int best_score = MINF;
 
   for(Point move: state->legal_actions){
-    int score = -eval(&(state->next_state(move)), depth-1);
+    int score = -eval(state->next_state(move), depth-1);
     if(score>best_score){
       best_action = move;
       best_score = score;

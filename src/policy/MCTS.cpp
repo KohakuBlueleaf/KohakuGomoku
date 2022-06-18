@@ -39,7 +39,7 @@ int MCTS::Node::playout(State *state, bool root){
   if (res == NONE){
     //with negative max, val should be -val of next state.
     int index = rand()%state->legal_actions.size();
-    int val = -playout(&state->next_state(state->legal_actions[index]), false);
+    int val = -playout(state->next_state(state->legal_actions[index]), false);
     if (root)
       return val;
     else{
@@ -98,7 +98,7 @@ float MCTS::Node::eval(){
 void MCTS::Node::expand(){
   this->childs.push_back(
     new Node(
-      &this->state->next_state(
+      this->state->next_state(
         this->state->legal_actions[this->now_child_n]
       )
     )

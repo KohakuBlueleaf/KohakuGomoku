@@ -280,7 +280,7 @@ void State::get_legal_actions(void){
 
 
 //Get next state with a move
-State& State::next_state(Point move){
+State* State::next_state(Point move){
   Board new_board = this->board;
 
   // place the disc
@@ -312,7 +312,7 @@ State& State::next_state(Point move){
   }
   next->legal_actions = actions;
 
-  return *next;
+  return next;
 }
 
 

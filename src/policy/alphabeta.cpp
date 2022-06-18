@@ -33,7 +33,7 @@ int AlphaBeta::eval(State *state, int depth, int alpha, int beta){
   //AlphaBeta Pruning
   for(auto move: state->legal_actions){
     //negative max
-    int score = -eval(&(state->next_state(move)), depth-1, -beta, -alpha);
+    int score = -eval(state->next_state(move), depth-1, -beta, -alpha);
     alpha = max(score, alpha);
     if(alpha >= beta){
       delete state;
@@ -53,7 +53,7 @@ Point AlphaBeta::get_move(State *state, int depth){
 
   auto all_moves = state->legal_actions;
   for(Point move: all_moves){
-    int score = -eval(&(state->next_state(move)), depth-1, MINF, -alpha);
+    int score = -eval(state->next_state(move), depth-1, MINF, -alpha);
     if(score > alpha){
       best_action = move;
       alpha = score;

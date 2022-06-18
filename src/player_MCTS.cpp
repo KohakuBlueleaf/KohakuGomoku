@@ -28,7 +28,7 @@ void read_board(std::ifstream& fin) {
 void write_valid_spot(std::ofstream& fout) {
   auto moves = root.legal_actions;
   for(auto move:moves){
-    if(root.next_state(move).check_res() == LOSE){
+    if(root.next_state(move)->check_res() == LOSE){
       fout << move.x << " " << move.y << std::endl;
       fout.flush();
       return;

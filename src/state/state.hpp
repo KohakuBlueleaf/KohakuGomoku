@@ -77,7 +77,7 @@ public:
   State(){};
   State(Board board, int player);
 
-  State& next_state(Point move);
+  State* next_state(Point move);
   GAME_STATE check_res();
   int eval();
 };

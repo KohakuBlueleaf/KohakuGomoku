@@ -167,7 +167,7 @@ static int count_4(Board_Min board, Board_Min avail){
         && ((avail[j]>>i)&=0b10000) == 0b10000
       );
     }
-    if(res>2)
+    if(res > 1)
       return res;
   }
   return res;
@@ -229,11 +229,11 @@ static int count_3_op(Board_Min board, Board_Min avail){
       bool target = (((board[j]>>i)&=0b111) == 0b111);
 
       if(i>0 && i<SIZE-3)
-        avail_check_d = avail[j][SIZE-i]&&avail[j][SIZE-i-4];
+        avail_check_d = avail[j][SIZE-i]&&avail[j][SIZE-4-i];
       if(i>1)
-        avail_check |= avail[j][SIZE-i]&&avail[j][SIZE-i+1];
+        avail_check |= avail[j][SIZE-i]&&avail[j][SIZE+1-i];
       if(i<SIZE-4)
-        avail_check |= avail[j][SIZE-i-4]&&avail[j][SIZE-i-5];
+        avail_check |= avail[j][SIZE-4-i]&&avail[j][SIZE-5-i];
         
       res += (avail_check & target);
       res += (avail_check_d & target);
@@ -258,12 +258,12 @@ void State::get_legal_actions(void){
   
   // only use the point that around the disc on the board
   for(auto p: move_list){
-    if(board[0][p.x][p.y]==0){
+    if(board[0][p.x][p.y] == 0){
       initial = false;
       for(auto p_off: ROUND){
         int x = p.x+p_off[0];
         int y = p.y+p_off[1];
-        if(x<0 || y<0 || x>=SIZE || y>=SIZE || point[x][y] || board[0][x][y]==0)
+        if(x<0 || y<0 || x>=SIZE || y>=SIZE || point[x][y] || !board[0][x][y])
           continue;
         actions.push_back(Point(x, y));
         point[x][y] = 1;
@@ -296,7 +296,7 @@ State* State::next_state(Point move){
   Board_Min point;
   std::vector<Point> actions;
   for(Point action:legal_actions){
-    if(action!=move){
+    if(action != move){
       actions.push_back(action);
       point[action.x][action.y] = 1;
     }
@@ -305,7 +305,7 @@ State* State::next_state(Point move){
   for(auto p_off: ROUND){
     int x = move.x+p_off[0];
     int y = move.y+p_off[1];
-    if(x<0 || y<0 || x>=SIZE || y>=SIZE || point[x][y] || board[0][x][y]==0)
+    if(x<0 || y<0 || x>=SIZE || y>=SIZE || point[x][y] || !board[0][x][y])
       continue;
     actions.push_back(Point(x, y));
     point[x][y] = 1;
@@ -337,11 +337,12 @@ GAME_STATE State::check_res(){
 int State::eval(){
   Board_Min self = board[this->player];
   Board_Min avail = board[0];
+  
   if(check_5(self) || check_4(self, avail))
     return 1000000;
 
   Board_Min opnt = board[3-this->player];
-  if(count_4(opnt, avail)>1)
+  if(count_4(opnt, avail) > 1)
     return -1000000;
 
   return count_3_op(self, avail)-count_3_op(opnt, avail);

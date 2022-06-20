@@ -31,20 +31,20 @@ make alphabeta #will create player_alphabeta.exe at build/ folder
 Finally
 ```bash
 cd build
-./main ./<POLICY> ./<POLICY>
+./main ./player_<POLICY> ./player_<POLICY>
 ```
 
 ### Merge to one file
 **Make sure you have installed cpp-merge**
 
-If you want to merge all cpp/hpp file into one file(For a make target).
+If you want to merge all cpp/hpp file into one file.
 You can use
 ```bash
 make merge
 ```
 to build all merge file.
 
-And if you want to only merge specific target, use below command.
+And if you only want to merge specific target, use below command.
 ```bash
 make merge_<target>
 ```

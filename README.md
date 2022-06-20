@@ -2,7 +2,7 @@
 
 ## Requirments
 Compiler: should support c++14.<br>
-Other: for `make merge`, see [this](https://www.npmjs.com/package/cpp-merge).
+Other: for `make merge`, see [this](https://www.npmjs.com/package/cpp-merge).<br>
 System: Been tested on Windows, MacOS, most of Linux distribution.
 (Tested under the lastest version at 2022/06)
 

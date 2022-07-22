@@ -1,16 +1,23 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <array>
+#include <tuple>
 #include <bitset>
 #include <algorithm>
 #include "../config.hpp"
+#include "../hakumat/hakumat.hpp"
 
-#define max(a,b) ((a>b)?a:b)
-#define min(a,b) ((a<b)?a:b)
 
 #define MINF -2147483647
 #define INF 2147483647
+
+#define op3_scaler 700
+#define op3d_scaler 1300
+
+#define VALMAX 262144
+#define VALMIN -262144
 
 
 enum SPOT_STATE {
@@ -64,20 +71,40 @@ const int ROUND[8][2] = {
   {-1,-1},
 };
 
+
 class State{
 private:
-  Board board;
-  int player;
   GAME_STATE res = UNKNOWN;
-  
-  void get_legal_actions(void);
 
 public:
+  Board board;
+  int player;
+  
   std::vector<Point> legal_actions;
   State(){};
   State(Board board, int player);
-
+  
+  std::vector<int> encode();
+  std::string print_board();
+  
+  void get_legal_actions(void);
   State* next_state(Point move);
   GAME_STATE check_res();
+  int eval();
+  int eval_norm();
+};
+
+
+class NNUEState: public State{
+private:
+  GAME_STATE res = UNKNOWN;
+  hakumat::Matrix<int> l1;
+  
+public:
+  NNUEState();
+  NNUEState(Board board, int player);
+  ~NNUEState();
+  
+  NNUEState* next_state(Point move);
   int eval();
 };

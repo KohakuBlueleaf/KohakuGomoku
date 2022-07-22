@@ -1,8 +1,12 @@
+#include <string>
+#include <sstream>
 #include <vector>
 #include <array>
 #include <bitset>
 #include <algorithm>
+
 #include "state.hpp"
+#include "../NNUE/nnue.hpp"
 
 
 std::vector<Point> move_list;
@@ -192,8 +196,8 @@ static int count_3_op(Board_Min board, Board_Min avail){
     if(i<SIZE-4)
       avail_check |= avail[i+3] & avail[i+4];
 
-    res += (avail_check & target).count();
-    res += (avail_check_d & target).count();
+    res += (avail_check & target).count()*op3_scaler;
+    res += (avail_check_d & target).count()*op3d_scaler;
 
     // cross l-up to r-bottom
     avail_check = avail_check_d = Row(0);
@@ -206,8 +210,8 @@ static int count_3_op(Board_Min board, Board_Min avail){
     if(i<SIZE-4)
       avail_check |= (avail[i+3]>>3) & (avail[i+4]>>4);
 
-    res += (avail_check & target).count();
-    res += (avail_check_d & target).count();
+    res += (avail_check & target).count()*op3_scaler;
+    res += (avail_check_d & target).count()*op3d_scaler;
 
     // cross r-up to l-bottom
     avail_check = avail_check_d = Row(0);
@@ -220,8 +224,8 @@ static int count_3_op(Board_Min board, Board_Min avail){
     if(i<SIZE-4)
       avail_check |= (avail[i+3]<<3) & (avail[i+4]<<4);
 
-    res += (avail_check & target).count();
-    res += (avail_check_d & target).count();
+    res += (avail_check & target).count()*op3_scaler;
+    res += (avail_check_d & target).count()*op3d_scaler;
 
     // horizontally
     for(int j=0; j<SIZE; j+=1){
@@ -235,12 +239,13 @@ static int count_3_op(Board_Min board, Board_Min avail){
       if(i<SIZE-4)
         avail_check |= avail[j][SIZE-4-i]&&avail[j][SIZE-5-i];
         
-      res += (avail_check & target);
-      res += (avail_check_d & target);
+      res += (avail_check & target)*op3_scaler;
+      res += (avail_check_d & target)*op3d_scaler;
     }
   }
   return res;
 }
+
 
 /*
 Declaration of State
@@ -270,13 +275,40 @@ void State::get_legal_actions(void){
       }
     }
   }
-
+  
   // initial state(only use the central as legal action)
   if(actions.empty() && initial)
     actions.push_back(Point(SIZE/2, SIZE/2));
   
   legal_actions = actions;
 };
+
+
+//encode for NNUE training dataset
+std::vector<int> State::encode(){
+  std::vector<int> encoded_board;
+  for(int i=0; i<SIZE; i+=1)
+    for(int j=0; j<SIZE; j+=1)
+      encoded_board.push_back(board[player][i][j]);
+  for(int i=0; i<SIZE; i+=1)
+    for(int j=0; j<SIZE; j+=1)
+      encoded_board.push_back(board[3-player][i][j]);
+  return encoded_board;
+}
+
+
+//for debug
+std::string State::print_board(){
+  std::stringstream ss;
+  
+  for(int i=0; i<SIZE; i+=1){
+    for(int j=0; j<SIZE; j+=1){
+      ss << (board[0][i][j] ? "．" : (board[1][i][j]? "Ｏ": "Ｘ"));
+    }
+    ss << '\n';
+  }
+  return ss.str();
+}
 
 
 //Get next state with a move
@@ -318,16 +350,17 @@ State* State::next_state(Point move){
 
 //Check if this game is and or not
 GAME_STATE State::check_res(){
+
   if (this->res != UNKNOWN)
     return this->res;
     
-  Board_Min next = board[3-this->player];
+  Board_Min next = this->board[3-this->player];
   if (check_5(next)){
     this->res = LOSE;
   }else if (this->legal_actions.empty()){
     this->res = DRAW;
   }else{
-  this->res = NONE;
+    this->res = NONE;
   }
   return this->res;
 }
@@ -339,11 +372,104 @@ int State::eval(){
   Board_Min avail = board[0];
   
   if(check_5(self) || check_4(self, avail))
-    return 1000000;
+    return 31111;
 
   Board_Min opnt = board[3-this->player];
   if(count_4(opnt, avail) > 1)
-    return -1000000;
+    return -31111;
 
   return count_3_op(self, avail)-count_3_op(opnt, avail);
+}
+
+
+/*
+Declaration of NNUEState,
+NNUEState is the State class for NNUE algo.
+*/
+NNUEState::NNUEState(){
+  //l1 is the output of NNUE linear layer 1
+  l1 = hakumat::Matrix<int>(1, 500);
+}
+NNUEState::NNUEState(Board board, int player): State(board, player){
+  l1 = hakumat::Matrix<int>(1, 500);
+  
+  //totally initialize, calc the l1 output from scratch
+  for(int i=0; i<250; i+=1)
+    l1[0][i] = b1[0][i];
+  for(int i=0; i<250; i+=1)
+    l1[0][i+250] = b1[0][i];
+  
+  for(int i=0; i<SIZE; i+=1)
+    for(int j=0; j<SIZE; j+=1)
+      if(board[player][i][j])
+        for(int k=0; k<250; k+=1)
+          l1[0][k] += w1[i*SIZE+j][k];
+  
+  for(int i=0; i<SIZE; i+=1)
+    for(int j=0; j<SIZE; j+=1)
+      if(board[3-player][i][j])
+        for(int k=0; k<250; k+=1)
+          l1[0][k+250] += w1[i*SIZE+j][k];
+};
+NNUEState::~NNUEState(){
+  l1.del();
+}
+
+
+NNUEState* NNUEState::next_state(Point move){
+  Board new_board = this->board;
+  
+  // place the disc
+  new_board[this->player][move.x][move.y] = 1;
+  new_board[0][move.x][move.y] = 0;
+  
+  // create next state
+  NNUEState *next = new NNUEState();
+  next->board = new_board;
+  next->player = 3-player;
+  
+  // get the legal actions for next state
+  Board_Min point;
+  std::vector<Point> actions;
+  for(Point action:legal_actions){
+    if(action != move){
+      actions.push_back(action);
+      point[action.x][action.y] = 1;
+    }
+  }
+  
+  for(auto p_off: ROUND){
+    int x = move.x+p_off[0];
+    int y = move.y+p_off[1];
+    if(x<0 || y<0 || x>=SIZE || y>=SIZE || point[x][y] || !board[0][x][y])
+      continue;
+    actions.push_back(Point(x, y));
+    point[x][y] = 1;
+  }
+  next->legal_actions = actions;
+  
+  //update l1 output
+  const int move_index = move.x*SIZE + move.y;
+  next->l1.setdata(&this->l1[0][250], 0, 250);
+  for(int i=0; i<250; i+=1)
+    next->l1[0][i+250] = this->l1[0][i] + w1[move_index][i];
+  
+  return next;
+}
+
+//since check_5 check_4 count_4 is fast enough
+//Add these functions can avoid some bad move
+int NNUEState::eval(){
+  Board_Min self = board[this->player];
+  Board_Min avail = board[0];
+  
+  if(check_5(self) || check_4(self, avail))
+    return VALMAX;
+
+  Board_Min opnt = board[3-this->player];
+  if(count_4(opnt, avail) > 1)
+    return VALMIN;
+
+  int val = NNUE::predict(this->l1);
+  return min(max(val, VALMIN), VALMAX);
 }

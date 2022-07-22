@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "state/NNUE/nnue.hpp"
+#include "NNUE/nnue.hpp"
 #include "state/state.hpp"
 #include "policy/NNUE.hpp"
 

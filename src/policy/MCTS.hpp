@@ -21,8 +21,6 @@
 #define C 0.707
 
 
-template<class Iter>
-inline size_t argmax(Iter first, Iter last);
 inline float ucb(float w, float n, int t);
 
 
@@ -50,6 +48,7 @@ public:
   ~MCTS();
 
   Point get_move(int times);
+  std::tuple<Point, int> get_move_with_val(int times);
   int count_nodes();
 private:
   Node* root;

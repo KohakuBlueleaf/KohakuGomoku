@@ -2,15 +2,16 @@
 #include <cmath>
 #include <vector>
 #include <queue>
+
 #include "MCTS.hpp"
+#include "../utils/utils.hpp"
 
 
-template<class Iter>
-inline size_t argmax(Iter first, Iter last){
-  return std::distance(first, std::max_element(first, last));
-}
 inline float ucb(float w, float n, int t){
   return w/n + C*sqrt(log(t)/n);
+}
+inline float value(MCTS::Node *child){
+  return -child->w/child->n;
 }
 
 
@@ -117,7 +118,7 @@ MCTS::Node& MCTS::Node::next_child(){
     );
   }
 
-  return *childs[argmax(std::begin(ucb1), std::end(ucb1))];
+  return *childs[argmax(ucb1)];
 };
 
 
@@ -141,15 +142,24 @@ Point MCTS::get_move(int times){
     root->eval();
   
   std::vector<float> n_list;
-  for(Node* child: root->childs){
-    //Negative max
-    n_list.push_back(
-      -child->w/child->n
-    );
-  }
+  for(Node* child: root->childs)
+    n_list.push_back(child->n);
   
   auto actions = root->state->legal_actions;
-  return actions[argmax(std::begin(n_list), std::end(n_list))];
+  return actions[argmax(n_list)];
+}
+
+std::tuple<Point, int> MCTS::get_move_with_val(int times){
+  for(int i=0; i<times; ++i)
+    root->eval();
+  
+  std::vector<float> n_list;
+  for(Node* child: root->childs)
+    n_list.push_back(child->n);
+  
+  auto actions = root->state->legal_actions;
+  auto choosed = argmax(n_list);
+  return {actions[choosed], int(value(root->childs[choosed])*times)};
 }
 
 

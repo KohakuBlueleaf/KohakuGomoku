@@ -1,12 +1,7 @@
 #include <ctime>
 #include <cmath>
+
 #include "minimax.hpp"
-
-
-template<class Iter>
-inline size_t argmax(Iter first, Iter last){
-  return std::distance(first, std::max_element(first, last));
-}
 
 
 //Evaluate state with MiniMax

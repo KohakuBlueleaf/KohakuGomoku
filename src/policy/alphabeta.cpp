@@ -1,12 +1,9 @@
 #include <ctime>
 #include <cmath>
+#include <tuple>
+#include <utility>
 #include "alphabeta.hpp"
-
-
-template<class Iter>
-inline size_t argmax(Iter first, Iter last){
-  return std::distance(first, std::max_element(first, last));
-};
+#include "../utils/utils.hpp"
 
 
 /*
@@ -34,7 +31,7 @@ int AlphaBeta::eval(State *state, int depth, int alpha, int beta){
   for(auto move: state->legal_actions){
     //negative max
     int score = -eval(state->next_state(move), depth-1, -beta, -alpha);
-    alpha = max(score, alpha);
+    alpha = std::max(score, alpha);
     if(alpha >= beta){
       delete state;
       return alpha;
@@ -61,4 +58,28 @@ Point AlphaBeta::get_move(State *state, int depth){
   }
 
   return best_action;
+};
+
+
+//for selfplay
+std::tuple<Point, int> AlphaBeta::get_move_with_val(State *state, int depth){
+  Point best_action = Point(-1, -1);
+  int alpha = MINF;
+
+  auto all_moves = state->legal_actions;
+  for(Point move: all_moves){
+    State* next = state->next_state(move);
+    if(next->check_res() == LOSE){
+      return {move, VALMAX};
+    }
+    int score = -eval(next, depth-1, MINF, -alpha);
+    if(score > alpha){
+      best_action = move;
+      alpha = score;
+    }
+  }
+  
+  if(best_action.x == -1)
+    best_action = all_moves[rand()%all_moves.size()];
+  return {best_action, std::max(std::min(alpha, VALMAX), VALMIN)};
 };

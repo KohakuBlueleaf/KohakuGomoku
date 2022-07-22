@@ -16,6 +16,7 @@ TARGET_PLAYER = $(PLAYERS:$(SOURCES_DIR)/player_%.cpp=%)
 TARGET_MAIN = main
 TARGET_MERGE_PLAYER = $(TARGET_PLAYER:%=merge_%)
 TARGET_MERGE_MAIN = merge_main
+TARGET_OTHER = selfplay benchmark
 OTHER = action state gamelog.txt
 
 
@@ -36,12 +37,17 @@ $(TARGET_PLAYER): % : $(SOURCES_DIR)/player_%.cpp
 	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/player_$@.exe $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
 $(TARGET_MAIN): % : $(SOURCES_DIR)/%.cpp
 	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@.exe $< 
+$(TARGET_OTHER): %: $(SOURCES_DIR)/%.cpp
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@.exe $(STATE_SOURCE) $(POLICY_DIR)/*.cpp $<
 else
 $(TARGET_PLAYER): % : $(SOURCES_DIR)/player_%.cpp
 	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/player_$@ $(STATE_SOURCE) $(POLICY_DIR)/$@.cpp $< 
 $(TARGET_MAIN): % : $(SOURCES_DIR)/%.cpp
 	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@ $< 
+$(TARGET_OTHER): %: $(SOURCES_DIR)/%.cpp
+	$(CXX) -Wall -Wextra -O2 $(CXXFLAGS) -o $(BUILD_DIR)/$@ $(STATE_SOURCE) $(POLICY_DIR)/*.cpp $<
 endif
+
 
 # build merge file
 $(TARGET_MERGE_PLAYER): merge_% : $(SOURCES_DIR)/player_%.cpp

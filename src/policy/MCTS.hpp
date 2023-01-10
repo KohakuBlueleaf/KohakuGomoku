@@ -13,12 +13,12 @@
 // expand threshold: 1
 // memory usage: 80~150MB
 #define EXPAND_THRESHOLD 1
-#define EPOCH 1000
+#define EPOCH 10000
 
 // Theoretically the C should be sqrt(2)
 // but sqrt(2)/2 is the best for this use case.
 // Maybe the real "Uncertainty" of our algorithm is not like others.
-#define C 0.707
+#define C 1.414
 
 
 inline float ucb(float w, float n, int t);

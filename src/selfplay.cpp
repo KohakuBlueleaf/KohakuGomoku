@@ -9,7 +9,7 @@
 
 
 #define DEPTH 4
-#define MCTS_ITER 2500
+#define MCTS_ITER 10000
 
 
 State* init_board(){
@@ -49,14 +49,14 @@ int main(){
     Point move; int val;
     MCTS *mcts = new MCTS(now);
     std::tie(move, val) = mcts->get_move_with_val(MCTS_ITER);
-    //std::cout << now->print_board() << '\n';
-    //std::cout << val << " " << move.x << "," << move.y << '\n';
+    // std::cout << now->print_board() << '\n';
+    // std::cout << val << " " << move.x << "," << move.y << '\n';
     data.push_back({now->encode(), val});
     now = now->next_state(move);
     delete mcts;
   }
   auto winner = (3-now->player == 1) ? 1 : -1;
-  //std::cout << now->print_board() << '\n';
+  // std::cout << now->print_board() << '\n';
   
   
   std::stringstream ss;

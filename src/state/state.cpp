@@ -333,7 +333,7 @@ State* State::next_state(Point move){
       point[action.x][action.y] = 1;
     }
   }
-
+  
   for(auto p_off: ROUND){
     int x = move.x+p_off[0];
     int y = move.y+p_off[1];
@@ -343,7 +343,7 @@ State* State::next_state(Point move){
     point[x][y] = 1;
   }
   next->legal_actions = actions;
-
+  
   return next;
 }
 

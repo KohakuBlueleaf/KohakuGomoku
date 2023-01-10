@@ -3,10 +3,10 @@ from time import time
 import numpy as np
 
 
+SCORE_COEF = 10000
+PLY_COEF = 0.25
+FACTOR = 1
 
-SCORE_COEF = 2500
-PLY_COEF = 0.5
-FACTOR = 10
 
 def calc_target(score, ply, res):
     return (
@@ -16,8 +16,8 @@ def calc_target(score, ply, res):
 
 
 def dataset_loader(
-        datas: TextIOWrapper
-    ) -> tuple[np.ndarray, np.ndarray]:
+    datas: TextIOWrapper
+) -> tuple[np.ndarray, np.ndarray]:
     print()
     train = []
     target = []

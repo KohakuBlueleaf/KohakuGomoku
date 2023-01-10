@@ -1,3 +1,4 @@
+print('Initializing... ', end='', flush = True)
 from math import ceil, log10
 from time import time
 from pickle import dump
@@ -7,35 +8,40 @@ import numpy as np
 import torch
 import torch.utils.data as Data
 
-from model import NNUE
+from model import NNUE, EMA
 
 
 # setting for training
 SEED = 1
 DEVICE = 'cuda'
-TEST_SIZE = 10000
-BATCH = 8192
-EPOCH = 300
-PERIOD = 5
+TEST_SIZE = 50000
+BATCH = 128
+EPOCH = 10
+PERIOD = 1
 
 torch.manual_seed(SEED)
 
 
 #initialize model, optimizer and loss funciton.
-print('Initializing... ', end='', flush = True)
-net = NNUE(225, 250, 10).to(DEVICE)
-opt = torch.optim.SGD(net.parameters(), lr = 0.0025, momentum=0.9)
-loss_func = torch.nn.MSELoss()
+net = NNUE(121, 128, 16).to(DEVICE)
+ema = EMA(net, 0.9999)
+ema.register()
+opt = torch.optim.AdamW(net.parameters(), lr = 2e-3)
+lr_sch = torch.optim.lr_scheduler.StepLR(opt, 1, 0.9)
+loss_func = torch.nn.functional.mse_loss
 print('done!')
 
 
-def log_weight(net: NNUE):
+def log_weight(net: NNUE, loss, step):
     (w1, b1), (w2, b2), (w3, b3), (w4, b4) = net.load_param()
     print(
+        f'|Step: {step:07}|Loss: {loss:7.5f}'
         f'|{np.max(w1):.2f} {np.min(w1):.2f} {np.average(np.abs(w1)):.2f}|'
         f'{np.max(w2):.2f} {np.min(w2):.2f} {np.average(np.abs(w2)):.2f}|'
         f'{np.max(w3):.2f} {np.min(w3):.2f} {np.average(np.abs(w3)):.2f}|'
-        f'{np.max(w4):.2f} {np.min(w4):.2f} {np.average(np.abs(w4)):.2f}|'
+        f'{np.max(w4):.2f} {np.min(w4):.2f} {np.average(np.abs(w4)):.2f}|',
+        end='\r',
+        flush=True
     )
 
 
@@ -59,8 +65,7 @@ def main():
     loader = Data.DataLoader(
         dataset = dataset,
         batch_size = BATCH,
-        shuffle = True,
-        drop_last = False
+        shuffle = True, drop_last = True
     )
     print('done!')
     
@@ -70,20 +75,20 @@ def main():
     print(f'Dataset Size: {len(data)}')
     print(f'Train Size: {len(train_x)}')
     print(f'Batch Size: {BATCH}')
+    print(f'Epoch iters: {len(train_x)//BATCH}')
     print(f'EPOCH: {EPOCH}')
     print('='*50)
     
     
     #log information of weights(for quantize)
-    log_weight(net)
     loss_t = loss_func(net(test_x.type(torch.float32)), test_t)
     print(
         f'| Start Training!'
         f'| Loss_T: {loss_t: 5.3f}|'
     )
     
-    training_loss = []
-    target_loss = []
+    ema_loss = 0
+    step = 0
     for e in range(EPOCH):
         t_s = time()
         total_loss = 0
@@ -95,40 +100,45 @@ def main():
             
             loss.backward()
             opt.step()
+            ema.update()
             
             total_loss += loss
             total += 1
+            
+            if ema_loss==0:
+                ema_loss = loss
+            else:
+                decay = min(0.9999, (step+1)/(step+10))
+                ema_loss = ema_loss*decay + loss*(1-decay)
+            
+            step += 1
             if total%100==0:
-                log_weight(net)
+                ema.apply_shadow()
+                log_weight(net, ema_loss, step)
+                ema.restore()
+        lr_sch.step()
         
+        ema.apply_shadow()
         loss_x = total_loss / total
         loss_t = loss_func(net(test_x.type(torch.float32)), test_t)
-        training_loss.append(float(loss_x))
-        target_loss.append(float(loss_t))
+        ema.restore()
         t_e = time()
         
         print(
             f'| Epoch: {e+1:>{int(ceil(log10(EPOCH)))+1}}'
-            f'| Loss_X: {loss_x:5.3f}| Loss_T: {loss_t: 5.3f}'
+            f'| Loss_X: {loss_x:6.4f}| Loss_T: {loss_t: 6.4f}'
             f'| {len(loader)/(t_e-t_s):4.1f} iters/sec'
-            f'| {(t_e-t_s):4.1f} sec/Epoch|',
+            f'| {(t_e-t_s):4.1f} sec/Epoch|'
+            +(' '*30)
         )
         if (e+1)%PERIOD == 0:
-            with open('weight/weights.pypick', 'wb') as f:
+            with open(f'weight/weights_{step}step.pypick', 'wb') as f:
+                ema.apply_shadow()
                 dump(net.load_param(), f)
-            print()
+                ema.restore()
     
     print()
     print('='*50)
-    
-    epoch = np.arange(1, EPOCH+1)
-    plt.subplots_adjust(
-        left = 0.035, bottom = 0.065,
-        right = 0.965, top = 0.935,
-    )
-    plt.plot(epoch, training_loss)
-    plt.plot(epoch, target_loss)
-    plt.show()
 
 
 if __name__ == '__main__':

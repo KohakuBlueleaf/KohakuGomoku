@@ -21,19 +21,23 @@ namespace hakumat{
     public:
       int row, col;
       
-      explicit Matrix(){
+      Matrix(){
         _data = NULL;
         row = 0; col = 0;
       };
-      explicit Matrix(int row, int col): row(row), col(col){
+      Matrix(const Matrix<dtype>& other){
+        _data = other._data;
+        row = other.row; col = other.col;
+      };
+      Matrix(int row, int col): row(row), col(col){
         _data = (dtype*)(calloc(row * col, sizeof(dtype)));
       };
-      explicit Matrix(int row, int col, bool random): row(row), col(col){
+      Matrix(int row, int col, bool random): row(row), col(col){
         _data = (dtype*)(malloc(row * col * sizeof(dtype)));
         for(int i=0; i<row*col; i+=1)
           _data[i] = random ? rand() : 0;
       };
-      explicit Matrix(int row, int col, int range): row(row), col(col){
+      Matrix(int row, int col, int range): row(row), col(col){
         _data = (dtype*)(malloc(row * col * sizeof(dtype)));
         for(int i=0; i<row*col; i+=1)
           _data[i] = rand()%range;

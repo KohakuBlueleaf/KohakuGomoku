@@ -1,6 +1,6 @@
 CXX = g++
 CXX_MERGE = cpp-merge
-CXXFLAGS = --std=c++14
+CXXFLAGS = --std=c++17
 
 SOURCES_DIR = src
 BUILD_DIR = build

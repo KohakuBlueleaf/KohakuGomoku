@@ -1,3 +1,8 @@
 .vscode/*
 build/*
 *.Ds_Store*
+__pycache__/
+*linear*.hpp
+*.pypick
+*.npy
+*.txt

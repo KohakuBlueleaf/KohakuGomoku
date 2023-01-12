@@ -16,14 +16,14 @@ SEED = 1
 DEVICE = 'cuda'
 TEST_SIZE = 50000
 BATCH = 128
-EPOCH = 10
+EPOCH = 15
 PERIOD = 1
 
 torch.manual_seed(SEED)
 
 
 #initialize model, optimizer and loss funciton.
-net = NNUE(121, 128, 16).to(DEVICE)
+net = NNUE(121, 64, 16).to(DEVICE)
 ema = EMA(net, 0.9999)
 ema.register()
 opt = torch.optim.AdamW(net.parameters(), lr = 2e-3)
@@ -123,7 +123,7 @@ def main():
         loss_t = loss_func(net(test_x.type(torch.float32)), test_t)
         ema.restore()
         t_e = time()
-        
+        print()
         print(
             f'| Epoch: {e+1:>{int(ceil(log10(EPOCH)))+1}}'
             f'| Loss_X: {loss_x:6.4f}| Loss_T: {loss_t: 6.4f}'

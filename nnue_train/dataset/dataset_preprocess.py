@@ -11,7 +11,7 @@ FACTOR = 1
 def calc_target(score, ply, res):
     return (
         int(score)/(SCORE_COEF)
-        + (int(ply)**0.5)/15*int(res) * PLY_COEF
+        + (int(ply)**0.5)/-15*int(res) * PLY_COEF
     )*FACTOR
 
 
